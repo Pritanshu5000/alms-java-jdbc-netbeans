@@ -211,44 +211,49 @@ public class ReturnBook extends javax.swing.JFrame {
         new Home().setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {                                         
         try {
-        // Query to select data from books table based on Book_ID
-        String sql = "SELECT * FROM advance_lms.books WHERE Book_ID=?";
-        pst = c.prepareStatement(sql);
-        pst.setString(1, jTextField1.getText()); // Assuming jTextField1 holds the book ID
-        rs = pst.executeQuery();
+            // Query to select data from books table based on Book_ID
+            String sql = "SELECT * FROM advance_lms.books WHERE Book_ID=?";
+            pst = c.prepareStatement(sql);
+            pst.setString(1, jTextField1.getText().trim()); // Assuming jTextField1 holds the book ID
+            rs = pst.executeQuery();
+            
+            // If there are rows returned from the books table
+            if (rs.next()) {
+                // Query to select data from issue table based on Book_ID and S_ID
+                String sql1 = "SELECT * FROM advance_lms.issue WHERE Book_ID=? AND S_ID=?";
+                pst1 = c.prepareStatement(sql1);
+                pst1.setString(1, jTextField1.getText().trim()); // Assuming jTextField1 holds the book ID
+                pst1.setString(2, jTextField2.getText().trim()); // Assuming jTextField2 holds the student ID
+                rsl = pst1.executeQuery();
 
-        // If there are rows returned from the books table
-        if (rs.next()) {
-            // Query to select data from issue table based on Book_ID and S_ID
-            String sql1 = "SELECT * FROM advance_lms.issue WHERE Book_ID=? AND S_ID=?";
-            pst1 = c.prepareStatement(sql1);
-            pst1.setString(1, jTextField1.getText()); // Assuming jTextField1 holds the book ID
-            pst1.setString(2, jTextField2.getText()); // Assuming jTextField2 holds the student ID
-            rsl = pst1.executeQuery();
+                // If there are rows returned from the issue table
+                if (rsl.next()) {
+                    // Query to select data from student_details table based on S_ID
+                    String sql2 = "SELECT * FROM advance_lms.student_details WHERE S_ID=?";
+                    pst2 = c.prepareStatement(sql2);
+                    pst2.setString(1, jTextField2.getText().trim()); // Assuming jTextField2 holds the student ID 
+                    rsl1 = pst2.executeQuery();
 
-            // If there are rows returned from the issue table
-            if (rsl.next()) {
-                // Query to select data from student_details table based on S_ID
-                String sql2 = "SELECT * FROM advance_lms.student_details WHERE S_ID=?";
-                pst2 = c.prepareStatement(sql2);
-                pst2.setString(1, jTextField2.getText()); // Assuming jTextField2 holds the student ID 
-                rsl1 = pst2.executeQuery();
-
-                // If there are rows returned from the student_details table
-                if (rsl1.next()) {
-                    // Set values in text fields based on retrieved data
-                    jTextField3.setText(rsl1.getString("S_Name")); // Corrected to retrieve S_Name from student_details table
-                    jTextField4.setText(rs.getString("Book_Name"));
-                    jTextField5.setText(rsl.getString("Issue_Date"));
-                    jTextField6.setText(rsl.getString("Due_Date"));                    
-                    // Make jTextField1 and jTextField2 non-editable
-                    jTextField1.setEditable(false);
-                    jTextField2.setEditable(false);
+                    // If there are rows returned from the student_details table
+                    if (rsl1.next()) {
+                        // Set values in text fields based on retrieved data
+                        jTextField3.setText(rsl1.getString("S_Name")); // Corrected to retrieve S_Name from student_details table
+                        jTextField4.setText(rs.getString("Book_Name"));
+                        jTextField5.setText(rsl.getString("Issue_Date"));
+                        jTextField6.setText(rsl.getString("Due_Date"));                    
+                        // Make jTextField1 and jTextField2 non-editable
+                        jTextField1.setEditable(false);
+                        jTextField2.setEditable(false);
+                    } 
+                    else {
+                        JOptionPane.showMessageDialog(this, "Student ID does not exist.");
+                        clear(); // Clear text fields
+                    }
                 } 
                 else {
-                    JOptionPane.showMessageDialog(this, "Student ID does not exist.");
+                    JOptionPane.showMessageDialog(this, "Incorrect Student ID or Book ID.");
                     clear(); // Clear text fields
                 }
             } 
@@ -257,33 +262,32 @@ public class ReturnBook extends javax.swing.JFrame {
                 clear(); // Clear text fields
             }
         } 
-        else {
-            JOptionPane.showMessageDialog(this, "Incorrect Student ID or Book ID.");
-            clear(); // Clear text fields
+        catch (SQLException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Book is not issued to this student.");
         }
-    } 
-    catch (SQLException ex) {
-        Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-        JOptionPane.showMessageDialog(null, "Book is not issued to this student.");
     }
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {                                         
         try {
-        String sql = "UPDATE advance_lms.issue SET ReturnBook='YES' WHERE Book_ID=? AND S_ID=?";
-        pst = c.prepareStatement(sql);
-        pst.setString(1, jTextField1.getText());
-        pst.setString(2, jTextField2.getText()); // Set the second parameter here
-        int rowsUpdated = pst.executeUpdate(); // Use executeUpdate for update queries
-        if (rowsUpdated > 0) {
-            JOptionPane.showMessageDialog(this, "Book Successfully returned.");
-            clear(); // Clear text fields if the update was successful
-        } else {
-            JOptionPane.showMessageDialog(this, "No rows were updated.");
-        }
-    } catch (SQLException ex) {
+            String sql = "UPDATE advance_lms.issue SET ReturnBook='YES' WHERE Book_ID=? AND S_ID=?";
+            pst = c.prepareStatement(sql);
+            pst.setString(1, jTextField1.getText().trim());
+            pst.setString(2, jTextField2.getText().trim()); // Set the second parameter here
+            int rowsUpdated = pst.executeUpdate(); // Use executeUpdate for update queries
+            if (rowsUpdated > 0) {
+                JOptionPane.showMessageDialog(this, "Book Successfully returned.");
+                clear(); // Clear text fields if the update was successful
+            } 
+            else {
+                JOptionPane.showMessageDialog(this, "No rows were updated.");
+            }
+        } 
+        catch (SQLException ex) {
         Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         JOptionPane.showMessageDialog(null, "Connection Error.");
+        }
     }
     }//GEN-LAST:event_jButton3ActionPerformed
 
