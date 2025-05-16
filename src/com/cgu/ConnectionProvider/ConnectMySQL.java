@@ -15,7 +15,7 @@ public class ConnectMySQL {
     
     private static final String DB_URL = "jdbc:mysql://localhost:3306/advance_lms";
     private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "SQL#2023@hxiz408";
+    private static final String DB_PASSWORD = "Enter your MySQL password";
     
     static Connection con = null;
     
