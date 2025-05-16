@@ -57,7 +57,7 @@
     - Update your database connection settings in DBConnection.java:
 		- String DB_URL = "jdbc:mysql://localhost:3306/advance_lms";
 		- String DB_USER = "root";
-		- String DB_PASSWORD = "<Enter your MySQL password>";
+		- String DB_PASSWORD = "Enter your MySQL password";
 		
 5. For Libraries, if not available you should download the .jar files & other relevant files right-click on the project -> click on properties -> go to Libraries -> click Add JAR file and then add the following:
 	- jcalendar-1.4.jar or newer version
